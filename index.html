@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Genetic Algorithm</title>
+    </author>Pascal Chatonnay</author>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Simple Genetic Algorithm</h1>
+    </header>
+    <section>
+        <h2>Parameters</h2>
+        <form id="parameters">
+            <label for="populationSize">Population size:</label>
+            <input type="number" id="populationSize" name="populationSize" value="100">
+            <label for="mutationRate">Mutation rate:</label>
+            <input type="number" id="mutationRate" name="mutationRate" value="0.01">
+            <label for="crossoverRate">Crossover rate:</label>
+            <input type="number" id="crossoverRate" name="crossoverRate" value="0.5">
+            <label for="maxGenerations">Max generations:</label>
+            <input type="number" id="maxGenerations" name="maxGenerations" value="100">
+            <label for="target">Target:</label>
+            <input type="text" id="target" name="target" value="To be or not to be">
+            <input type="submit" value="Start">
+        </form>
+    </section>
+    <section>
+        <h2>Results</h2>
+        <div id="results"></div>
+    </section>
+    <footer>
+        <p>© 2019 Pascal Chatonnay</p>
+    </footer>
+</body>
+</html>
