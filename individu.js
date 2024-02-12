@@ -12,7 +12,7 @@ function randomGenotype() {
     return genotype;
 }
 
-// function decodeGenotype : covertie en entier un génotype
+// function decodeGenotype : convertie en entier un génotype
 function decodeGenotype(genotype) {
     var x = 0;
     for (var i = 0; i < individuSize; i++) {

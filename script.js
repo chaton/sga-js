@@ -84,7 +84,7 @@ function lance() {
     */
     alert('trié');
     // affichePopulation();
-    // afficheResultat();
+    afficheResultat();
 }   
 
 
