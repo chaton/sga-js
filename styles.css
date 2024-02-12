@@ -33,3 +33,22 @@ footer {
     text-align: center;
     color: #fff;
 }
+#parameters {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#parameters label {
+    text-align: right;
+    margin-right: 10px;
+    flex-basis: 45%;
+}
+
+#parameters input[type="submit"] {
+    margin-left: auto;
+    flex-basis: 100%;
+}
+
+.formWrapper {
+    width: 50%;
+}
