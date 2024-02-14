@@ -2,6 +2,8 @@
 
 // taille d'un individu
 var individuSize = 10;
+var geneStructure = [4,3,3];
+
 
 // définition du génotype
 function randomGenotype() {
@@ -12,18 +14,38 @@ function randomGenotype() {
     return genotype;
 }
 
+// fonction decodeGene : convertie en entier un gène
+function decodeGene(gene) {
+    var x = 0;
+    for (var i = 0; i < gene.length; i++) {
+        x += gene[i] * Math.pow(2, i);
+    }
+    return x;
+}
+
+
 // function decodeGenotype : convertie en entier un génotype
 function decodeGenotype(genotype) {
-    var x = 0;
-    for (var i = 0; i < individuSize; i++) {
-        x += genotype[i] * Math.pow(2, i);
+    var x = [];
+    var offset = 0;
+    var genNumber = geneStructure.length;
+    console.log(genNumber);
+
+    for (var i = 0; i < genNumber; i++) {
+        var geneSize = geneStructure[i];
+        console.log(geneSize);
+
+        var gene = genotype.slice(offset, offset + geneSize);
+        console.log(gene);
+        x.push(decodeGene(gene));
+        offset += geneSize;
     }
     return x;
 }
 
 // fonction fitness : fonction à optimiser
 function fitness(x) {
-    return x * x;
+    return x[0] * x[1] + x[2];
 }
 
 
