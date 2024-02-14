@@ -15,7 +15,7 @@ var calls = 0;
 
 
 // fonction pour récuperer les valeurs des inputs
-function getValues() {
+function getFormValues() {
     populationSize = parseInt(document.getElementById("populationSize").value);
     mutationRate = parseFloat(document.getElementById("mutationRate").value);
     crossoverRate = parseFloat(document.getElementById("crossoverRate").value);
@@ -23,6 +23,15 @@ function getValues() {
 
 }
 
+
+/*
+Trois fonctions pour mettre à jour le nombree d'appel à la fonction fitness
+
+changementForm() est appelée depuis le formulaire lors d'un changement
+fitnessCalls() est appelée pour calculer le nombre d'appel
+displayCalls() est appelée pour afficher le nombre d'appel
+
+*/
 // fonction affiche le nombre d'appel dans le champ de foumulaire "calls
 function displayCalls() {
     document.getElementById("calls").value = calls;
@@ -33,9 +42,9 @@ function fitnessCalls() {
     calls = populationSize*(1 + (maxGeneration *crossoverRate));
 }
 
+// fonction appeler lors d'un changement dans le formulaire afin de mettre à jour le nombre d'appel à la fonction dévaluation
 function changementForm() {
- //   alert('blop')
- getValues();
+ getFormValues();
  fitnessCalls();
  displayCalls();
 }
@@ -65,33 +74,32 @@ function affichePopulation() {
 
 // fonction de lance de l'algorithme génétique
 function lance() {
-    getValues();
+    // récupère les valeurs du formulaire
+    getFormValues();
+
+    // affiche le nombre d'appel à la fonction fitness
     fitnessCalls();
     displayCalls();
 
+    // initialisation de la population vide
     generation = 0;
     population = [];
     
+    // création de la population
     for (var i = 0; i < populationSize; i++) {
         population.push(new Individu());
     }
-    affichePopulation();
-    alert('avant trie');
-    
     
     population.sort(function(a, b) {
         return b.fitness - a.fitness;
     });
 
     /*
-    displayPopulation();
     displayBest();
     displayGeneration();
     nextGeneration();
     */
-    alert('trié');
-    // affichePopulation();
+//    alert('trié');
+    affichePopulation();
     afficheResultat();
 }   
-
-

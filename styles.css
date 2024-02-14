@@ -52,3 +52,11 @@ footer {
 .formWrapper {
     width: 50%;
 }
+
+.presentation {
+    background-color: #333;
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px solid #040404;
+    border-radius: 4px;
+}
