@@ -48,10 +48,17 @@ function afficheResultat() {
 
 // fonction pour afficher la population
 function affichePopulation() {
-    var txt = "";
+    var txt = "<table>";
+    txt += "<tr><th>Individu</th><th>Genotype</th><th>Phenotype</th><th>Fitness</th></tr>";
     for (var i = 0; i < populationSize; i++) {
-        txt += "Individu " + i + " genotype : " + population[i].genotype + " phenotype : " + population[i].phenotype + " fitness : " + population[i].fitness + "<br>";
+        txt += "<tr>";
+        txt += "<td>" + i + "</td>";
+        txt += "<td>" + population[i].genotype + "</td>";
+        txt += "<td>" + population[i].phenotype + "</td>";
+        txt += "<td>" + population[i].fitness + "</td>";
+        txt += "</tr>";
     }
+    txt += "</table>";
     document.getElementById("population").innerHTML = txt;
     return null;
 }
