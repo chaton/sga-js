@@ -10,7 +10,7 @@ var crossoverRate = 0.5;
 var mutationRate = 0.01;
 var generation = 0;
 var calls = 0;
-
+var sumFitness = 0;
 
 
 
@@ -22,6 +22,42 @@ function getFormValues() {
     maxGeneration = parseInt(document.getElementById("maxGenerations").value);
 
 }
+
+// fonction pour valider les valeurs du formulaire et calculer les variables induites
+function validationForm() {
+        // validation des valeurs et calcul des variables induites
+        if (populationSize < 2) {
+            alert("La taille de la population doit être supérieure à 1");
+            exit(0);
+            return;
+        }
+        if (mutationRate < 0 || mutationRate > 1) {
+            alert("Le taux de mutation doit être compris entre 0 et 1");
+            exit(0);
+            return;
+        }
+        if (crossoverRate < 0 || crossoverRate > 1) {
+            alert("Le taux de crossover doit être compris entre 0 et 1");
+            exit(0);
+            return;
+        }
+        if (maxGeneration < 1) {
+            alert("Le nombre de générations doit être supérieur à 0");
+            exit(0);
+            return;
+        }
+    
+        // calcul du nombre d'itérations de la fonction de crossover
+        var NbCross = populationSize * crossoverRate;
+        NbCross = Math.round(NbCross/2); // on veut un nombre pair de nouveaux individus (2 par crossover)
+    
+        if (NbNewIndiv < 2) {
+            alert("Le taux de crossover est trop faible pour créer une nouvelle population");
+            exit(0);
+            return;
+        }
+}
+
 
 
 /*
@@ -72,10 +108,24 @@ function affichePopulation() {
     return null;
 }
 
+// Mécanique Génétique
+selectParent() {
+    var index = 0;
+    var r = Math.random();
+    while (r > 0) {
+        r -= population[index].fitness;
+        index++;
+    }
+    index--;
+    return population[index];
+}
+
 // fonction de lance de l'algorithme génétique
 function lance() {
     // récupère les valeurs du formulaire
     getFormValues();
+
+    validationForm();
 
     // affiche le nombre d'appel à la fonction fitness
     fitnessCalls();
@@ -94,6 +144,40 @@ function lance() {
         return b.fitness - a.fitness;
     });
 
+// Main genetic algorithm loop
+while (generation < maxGeneration) {
+    var newPopulation = [];
+
+    // Perform selection, crossover, and mutation
+    // calcule la somme des fitness
+    sumFitness = 0;
+    for (var i = 0; i < populationSize; i++) {
+        sumFitness += population[i].fitness;
+    }
+
+    for (var i = 0; i < NbCross; i++) {
+        var parentA = selectParent();
+        var parentB = selectParent();
+
+        var child = crossover(parentA, parentB);
+        child = mutate(child);
+
+        newPopulation.push(child);
+    }
+
+    // Replace the old population with the new population
+    population = newPopulation;
+
+    // Sort the population by fitness
+    population.sort(function(a, b) {
+        return b.fitness - a.fitness;
+    });
+
+    // Increment the generation counter
+    generation++;
+}
+
+    
     /*
     displayBest();
     displayGeneration();
