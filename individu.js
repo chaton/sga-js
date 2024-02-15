@@ -23,7 +23,6 @@ function decodeGene(gene) {
     return x;
 }
 
-
 // function decodeGenotype : convertie en entier un génotype
 function decodeGenotype(genotype) {
     var x = [];
