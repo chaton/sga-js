@@ -1,9 +1,10 @@
 // définition des individus
 
 // taille d'un individu
-var individuSize = 10;
-var geneStructure = [4,3,3];
 
+var geneStructure = [4,3,3];
+const reducer = (accumulator, currentValue) => accumulator + currentValue;
+var individuSize = geneStructure.reduce(reducer, 0);
 
 // définition du génotype
 function randomGenotype() {
