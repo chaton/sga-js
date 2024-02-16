@@ -14,6 +14,12 @@ var calls = 0;
 var sumFitness = 0;
 var NbCross = 0;
 
+var parentA;
+var parentB;
+var child = []
+var child1;
+var child2;
+
 // variable pour l'analyse
 var nbMutation = 0;
 var nbMutationLocus =[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -64,7 +70,9 @@ function validationForm() {
 }
 
 
-
+// ********************************************************************************************************************
+// ****************************    nombre d'appel à la fonction fitness   *********************************************
+// ********************************************************************************************************************
 /*
 Trois fonctions pour mettre à jour le nombree d'appel à la fonction fitness
 
@@ -89,6 +97,18 @@ function changementForm() {
  fitnessCalls();
  displayCalls();
 }
+
+// ********************************************************************************************************************
+// ********************************************************************************************************************
+// ********************************************************************************************************************
+
+
+
+// ********************************************************************************************************************
+// ****************************    Affichage des résultats   **********************************************************
+// ********************************************************************************************************************
+
+
 
 // fonction pour afficher les resultats
 function afficheResultat() {
@@ -117,7 +137,14 @@ function affichePopulation() {
     return null;
 }
 
-// Mécanique Génétique
+// ********************************************************************************************************************
+// ********************************************************************************************************************
+// ********************************************************************************************************************
+
+
+// ********************************************************************************************************************
+// ********************************      Mécanique Génétique      *****************************************************
+// ********************************************************************************************************************
 
 // fonction pour créer la population initiale
 function createPopulation() {
@@ -131,7 +158,7 @@ function crossover(parentA, parentB) {
     var child1 = new Individu();
     var child2 = new Individu();
 
-    var crossoverPoint = Math.floor(Math.random() * individuSize); // Point de croisement aléatoire
+    var crossoverPoint = Math.floor(Math.random() * (individuSize-1))+1; // Point de croisement aléatoire (ni le premier ni le dernier locus)
 
     for (var i = 0; i < individuSize; i++) {
         if (i < crossoverPoint) {
@@ -143,7 +170,7 @@ function crossover(parentA, parentB) {
         }
     }
 
-
+    // console.log("Crossover point :" + crossoverPoint + " " + parentA.genotype + " " + parentB.genotype + " " + child1.genotype + " " + child2.genotype);
     // console.log("Crossover result " + child1.genotype + " " + child2.genotype);
     return [child1, child2];
 }
@@ -155,7 +182,7 @@ function mutate(indiv) {
             indiv.genotype[i] = 1 - indiv.genotype[i];
             nbMutation++;
             nbMutationLocus[i]++;
-            console.log("Mutation " + nbMutation + " au locus " + i + " " + indiv.genotype + "\nrépartition des mutations " + nbMutationLocus );
+            // console.log("Mutation " + nbMutation + " au locus " + i + " " + indiv.genotype + "\nrépartition des mutations " + nbMutationLocus );
         }
     }
     return indiv;
@@ -174,11 +201,15 @@ function selectParent() {
     return population[index];
 }
 
-// fonction de lance de l'algorithme génétique
-function lance() {
-    // récupère les valeurs du formulaire
-    getFormValues();
 
+// ********************************************************************************************************************
+// ***************************************      Algorithme Principal     **********************************************
+// ********************************************************************************************************************
+
+// fonction de lancement de l'algorithme génétique
+function lance() {
+    // récupère les valeurs du formulaire et vlidation
+    getFormValues();
     validationForm();
 
     // affiche le nombre d'appel à la fonction fitness
@@ -189,77 +220,74 @@ function lance() {
     generation = 0;
     population = [];
     
+    // création de la population initiale
     createPopulation();
     
+    // premier tri de la population par fitness
     population.sort(function(a, b) {
         return b.fitness - a.fitness;
     });
 
-// Main genetic algorithm loop
-while (generation < maxGeneration) { //maxGeneration 
-    var newPopulation = [];
+    // Boucle principale de l'algo Génétique
+    while (generation < maxGeneration) { //maxGeneration 
+        var newPopulation = [];
 
-    // Perform selection, crossover, and mutation
-    // calcule la somme des fitness
-    sumFitness = 0;
-    for (var i = 0; i < populationSize; i++) {
-        sumFitness += population[i].fitness;
-    }
-
-    for (var i = 0; i < NbCross; i++) {
-        var parentA = selectParent();
-        var parentB = selectParent();
-
-        var child = crossover(parentA, parentB);
-        var nbChild = child.length;
-        if (nbChild != 2) {
-            alert("Erreur dans la fonction de crossover");
-            exit(0);
-            return;
-        }
-        var child1 = child[0];
-        var child2 = child[1];
-
-        // Mutation
-
-        child1 = mutate(child1);
-        child2 = mutate(child2);        
+        // Réalisation de --> selection, crossover, and mutation
         
-        child1.phenotype = decodeGenotype(child1.genotype);
-        child1.fitness = fitness(child1.phenotype);
-        child2.phenotype = decodeGenotype(child2.genotype);
-        child2.fitness = fitness(child2.phenotype);
+        // calcule la somme des fitness
+        sumFitness = 0;
+        for (var i = 0; i < populationSize; i++) {
+            sumFitness += population[i].fitness;
+        }
 
-        newPopulation.push(child1);
-        newPopulation.push(child2);
+        for (var i = 0; i < NbCross; i++) {
+            parentA = selectParent();
+            parentB = selectParent();
+
+            child = crossover(parentA, parentB); // on recoit un tableau de deux enfants
+            var nbChild = child.length;
+            if (nbChild != 2) {
+                alert("Erreur dans la fonction de crossover");
+                exit(0);
+                return;
+            }
+
+            // Mutation
+            child1 = mutate(child[0]);
+            child2 = mutate(child[1]);        
+            
+            // decodage et calcul du fitness
+            child1.phenotype = decodeGenotype(child1.genotype);
+            child2.phenotype = decodeGenotype(child2.genotype);
+
+            // evaluation
+            child1.fitness = fitness(child1.phenotype);
+            child2.fitness = fitness(child2.phenotype);
+
+            // insertion des enfants dans la nouvelle population
+            newPopulation.push(child1);
+            newPopulation.push(child2);
+        }
+
+        // Completion de la population pour maintenir la taille
+        for (var i = 0; i < populationSize - (2*NbCross); i++) {
+            var indivSauve = selectParent();
+            newPopulation.push(indivSauve);
+        }
+
+        // Remplacement de la population par la nouvelle
+        population = newPopulation;
+
+        // trie de la population par fitness
+        population.sort(function(a, b) {
+            return b.fitness - a.fitness;
+        });
+
+        // Increment the generation counter
+        generation++;
     }
-
-    // Add the remaining individuals to the new population
-    for (var i = 0; i < populationSize - (2*NbCross); i++) {
-        var indivSaved = selectParent();
-        newPopulation.push(indivSaved);
-    }
-
-    // Replace the old population with the new population
-    population = newPopulation;
-    // debug
-    affichePopulation();
-
-    // Sort the population by fitness
-    population.sort(function(a, b) {
-        return b.fitness - a.fitness;
-    });
-
-    // Increment the generation counter
-    generation++;
-}
   
-    /*
-    displayBest();
-    displayGeneration();
-    nextGeneration();
-    */
-//    alert('trié');
+    // affichage des résultats
     affichePopulation();
     afficheResultat();
 }   

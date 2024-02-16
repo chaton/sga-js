@@ -21,7 +21,7 @@ function randomGenotype() {
 }
 
 
-// function decodeGenotype : convertie en entier un génotype
+// function decodeGenotype : convertie un génotype en entier
 function decodeGenotype(genotype) {
     var x = [];
     var offset = 0;
@@ -38,11 +38,6 @@ function decodeGenotype(genotype) {
         offset += geneSize;
     }
     return x;
-}
-
-// fonction fitness : fonction à optimiser
-function fitness(x) {
-    return x[0] * x[1] + x[2];
 }
 
 
