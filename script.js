@@ -9,9 +9,14 @@ var maxGeneration = 100;
 var crossoverRate = 0.5;
 var mutationRate = 0.01;
 var generation = 0;
+
 var calls = 0;
 var sumFitness = 0;
+var NbCross = 0;
 
+// variable pour l'analyse
+var nbMutation = 0;
+var nbMutationLocus =[0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
 
 // fonction pour récuperer les valeurs des inputs
@@ -48,10 +53,10 @@ function validationForm() {
         }
     
         // calcul du nombre d'itérations de la fonction de crossover
-        var NbCross = populationSize * crossoverRate;
+        NbCross = populationSize * crossoverRate;
         NbCross = Math.round(NbCross/2); // on veut un nombre pair de nouveaux individus (2 par crossover)
     
-        if (NbNewIndiv < 2) {
+        if (NbCross < 2) {
             alert("Le taux de crossover est trop faible pour créer une nouvelle population");
             exit(0);
             return;
@@ -93,6 +98,10 @@ function afficheResultat() {
 
 // fonction pour afficher la population
 function affichePopulation() {
+    populationSize = population.length;
+    // console.log("Taille de la population " + populationSize);
+    // console.log("---  " + population);
+
     var txt = "<table>";
     txt += "<tr><th>Individu</th><th>Genotype</th><th>Phenotype</th><th>Fitness</th></tr>";
     for (var i = 0; i < populationSize; i++) {
@@ -109,11 +118,56 @@ function affichePopulation() {
 }
 
 // Mécanique Génétique
-selectParent() {
+
+// fonction pour créer la population initiale
+function createPopulation() {
+     for (var i = 0; i < populationSize; i++) {
+        population.push(new Individu());
+    }
+}
+
+// fonction de crossover
+function crossover(parentA, parentB) {
+    var child1 = new Individu();
+    var child2 = new Individu();
+
+    var crossoverPoint = Math.floor(Math.random() * individuSize); // Point de croisement aléatoire
+
+    for (var i = 0; i < individuSize; i++) {
+        if (i < crossoverPoint) {
+            child1.genotype[i] = parentA.genotype[i];
+            child2.genotype[i] = parentB.genotype[i];
+        } else {
+            child1.genotype[i] = parentB.genotype[i];
+            child2.genotype[i] = parentA.genotype[i];
+        }
+    }
+
+
+    // console.log("Crossover result " + child1.genotype + " " + child2.genotype);
+    return [child1, child2];
+}
+
+// fonction de mutation
+function mutate(indiv) {
+    for (var i = 0; i < individuSize; i++) {
+        if (Math.random() < mutationRate) {
+            indiv.genotype[i] = 1 - indiv.genotype[i];
+            nbMutation++;
+            nbMutationLocus[i]++;
+            console.log("Mutation " + nbMutation + " au locus " + i + " " + indiv.genotype + "\nrépartition des mutations " + nbMutationLocus );
+        }
+    }
+    return indiv;
+}
+
+
+// fonction de sélection d'un parent
+function selectParent() {
     var index = 0;
     var r = Math.random();
     while (r > 0) {
-        r -= population[index].fitness;
+        r -= population[index].fitness / sumFitness;
         index++;
     }
     index--;
@@ -135,17 +189,14 @@ function lance() {
     generation = 0;
     population = [];
     
-    // création de la population
-    for (var i = 0; i < populationSize; i++) {
-        population.push(new Individu());
-    }
+    createPopulation();
     
     population.sort(function(a, b) {
         return b.fitness - a.fitness;
     });
 
 // Main genetic algorithm loop
-while (generation < maxGeneration) {
+while (generation < maxGeneration) { //maxGeneration 
     var newPopulation = [];
 
     // Perform selection, crossover, and mutation
@@ -160,13 +211,39 @@ while (generation < maxGeneration) {
         var parentB = selectParent();
 
         var child = crossover(parentA, parentB);
-        child = mutate(child);
+        var nbChild = child.length;
+        if (nbChild != 2) {
+            alert("Erreur dans la fonction de crossover");
+            exit(0);
+            return;
+        }
+        var child1 = child[0];
+        var child2 = child[1];
 
-        newPopulation.push(child);
+        // Mutation
+
+        child1 = mutate(child1);
+        child2 = mutate(child2);        
+        
+        child1.phenotype = decodeGenotype(child1.genotype);
+        child1.fitness = fitness(child1.phenotype);
+        child2.phenotype = decodeGenotype(child2.genotype);
+        child2.fitness = fitness(child2.phenotype);
+
+        newPopulation.push(child1);
+        newPopulation.push(child2);
+    }
+
+    // Add the remaining individuals to the new population
+    for (var i = 0; i < populationSize - (2*NbCross); i++) {
+        var indivSaved = selectParent();
+        newPopulation.push(indivSaved);
     }
 
     // Replace the old population with the new population
     population = newPopulation;
+    // debug
+    affichePopulation();
 
     // Sort the population by fitness
     population.sort(function(a, b) {
@@ -176,8 +253,7 @@ while (generation < maxGeneration) {
     // Increment the generation counter
     generation++;
 }
-
-    
+  
     /*
     displayBest();
     displayGeneration();

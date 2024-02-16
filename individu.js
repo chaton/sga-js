@@ -29,14 +29,14 @@ function decodeGenotype(genotype) {
     var x = [];
     var offset = 0;
     var genNumber = geneStructure.length;
-    console.log(genNumber);
+    // console.log(genNumber);
 
     for (var i = 0; i < genNumber; i++) {
         var geneSize = geneStructure[i];
-        console.log(geneSize);
+        // console.log(geneSize);
 
         var gene = genotype.slice(offset, offset + geneSize);
-        console.log(gene);
+        // console.log(gene);
         x.push(decodeGene(gene));
         offset += geneSize;
     }
