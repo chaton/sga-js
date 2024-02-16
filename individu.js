@@ -1,12 +1,17 @@
 // définition des individus
 
+var genNumber = 0; // nombre de gènes
+var individuSize = 0; // taille d'un individu
+
+// calcule le nombre de gènes
+genNumber = genes.length;
+
 // taille d'un individu
+// calcul de la taille d'un individu (somme des tailles des gènes)
+const reducer = (accumulator, currentValue) => accumulator + currentValue.size;
+individuSize = genes.reduce(reducer, 0);
 
-var geneStructure = [4,3,3];
-const reducer = (accumulator, currentValue) => accumulator + currentValue;
-var individuSize = geneStructure.reduce(reducer, 0);
-
-// définition du génotype
+// création aléatoire du génotype
 function randomGenotype() {
     var genotype = [];
     for (var i = 0; i < individuSize; i++) {
@@ -15,29 +20,21 @@ function randomGenotype() {
     return genotype;
 }
 
-// fonction decodeGene : convertie en entier un gène
-function decodeGene(gene) {
-    var x = 0;
-    for (var i = 0; i < gene.length; i++) {
-        x += gene[i] * Math.pow(2, i);
-    }
-    return x;
-}
 
 // function decodeGenotype : convertie en entier un génotype
 function decodeGenotype(genotype) {
     var x = [];
     var offset = 0;
-    var genNumber = geneStructure.length;
+    
     // console.log(genNumber);
 
     for (var i = 0; i < genNumber; i++) {
-        var geneSize = geneStructure[i];
+        var geneSize = genes[i].size;
         // console.log(geneSize);
 
         var gene = genotype.slice(offset, offset + geneSize);
         // console.log(gene);
-        x.push(decodeGene(gene));
+        x.push(genes[1].decode(gene));
         offset += geneSize;
     }
     return x;
